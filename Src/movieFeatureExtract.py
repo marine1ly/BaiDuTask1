@@ -4,6 +4,7 @@ Created on 2014年6月24日
 
 @author: Mafing
 '''
+import simMeasure
 import funUnit
 import jieba
 import datetime
@@ -11,6 +12,7 @@ import time
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+
 def attrTfIdfExtract(InfoDic,entityDic,attr):
     '''
              输入整体的train集上entity集合，返回其内attr对应属性的tf-idf文档向量
@@ -153,11 +155,11 @@ def featureGenerate(filePath):
             elif attr in "datePublish":
                 f1 = featureAttr[attr].get(key1)[0]#将其内数值去除，方便下面计算相似度
                 f2 = featureAttr[attr].get(key2)[0]
-                tmpSim = funUnit.datePublishSim(f1,f2)
+                tmpSim = simMeasure.datePublishSim(f1,f2)
             elif "Count" in attr:
                 f1 = featureAttr[attr].get(key1)
                 f2 = featureAttr[attr].get(key2)
-                tmpSim = funUnit.mixSim(f1, f2)
+                tmpSim = simMeasure.mixSim(f1, f2)
             elif "LDA" in attr:
                 f1 = featureAttr[attr].get(key1)
                 f2 = featureAttr[attr].get(key2)
@@ -178,11 +180,11 @@ def featureGenerate(filePath):
                 else:    
                     dense1 = matutils.sparse2full(vec_lda1, lda.num_topics)
                     dense2 = matutils.sparse2full(vec_lda2, lda.num_topics)
-                    tmpSim = funUnit.kl(dense1, dense2)
+                    tmpSim = simMeasure.kl(dense1, dense2)
             else:#其余使用jaccardSim
                 f1 = featureAttr[attr].get(key1)
                 f2 = featureAttr[attr].get(key2)
-                tmpSim = funUnit.jaccardSim(f1, f2)
+                tmpSim = simMeasure.jaccardSim(f1, f2)
             simList.append(str(tmpSim))
         try:
             fOut.write(key1+"\t"+key2+"\t"+InfoDic[key1].get("name")+"\t"+InfoDic[key2].get("name")+"\t"+"\t".join(simList)+"\t"+tag+"\n")
